@@ -1,0 +1,189 @@
+---
+title: Legislative Sentiment Analysis
+subtitle: Scraping stakeholder testimony
+authors: ["admin"]
+date: '2019-03-05'
+categories: ["R", "Policy"]
+tags: ["text mining"]
+---
+
+
+
+
+Public testimony in state government is a unique animal. A strange combination of concerned citizens, lobbyists, and your [local anti-tax activist](https://www.youtube.com/watch?v=IrGlaujlR60&t=490s). 
+
+Tim Eyman aside, this year's Washington State legislative session began with an emphasis on healthcare policy, with bills introduced ranging from a statewide public option to an end to balance billing. When the opportunity came up to track a bill through the Washington legislature this session for my MPA program, I signed up for [HB 1065](https://app.leg.wa.gov/billsummary?BillNumber=1065&Year=2019&Initiative=false). 
+
+For a quick primer on balance billing, I would recommend [Sarah Kliff's excellent work at Vox](https://www.vox.com/health-care/2018/12/18/18134825/emergency-room-bills-health-care-costs-america) on the ins and outs of exorbitant emergency room charges.
+
+TVW, the precursor to C-SPAN, provides machine-generated transcripts of all committee hearings conducted by the Washington legislator. It may not be *perfectly* accurate, but it will serve my purposes by providing a rough way to visualize stakeholder testimony on a fraught policy issue. I did have to manually copy and paste the transcriptions by hand into text files, organized by the primary stakeholder involved. 
+
+* `OIC` represents the Office of the Insurance Commissioner, the state agency requesting the legislation. 
+* The `public` category is broadly construed to include concerned citizens and consumer advocacy organizations.
+* `carriers` include insurance companies and health plan associations.
+* Finally, `providers` represent both hospital and physician organizations, who have similar profit incentives in regards to balance bills. 
+
+
+
+```r
+#Packages
+library(tidyverse)
+library(readtext)
+library(tm)
+library(wordcloud)
+library(tidytext)
+library(viridis)
+library(hrbrthemes)
+
+#Hearing Data Import
+combined_testimony <- data.frame(matrix(nrow = 1, ncol = 4))
+colnames(combined_testimony) = c("OIC", "Public", "Carriers", "Providers")
+combined_testimony$OIC <- paste(as.character(readtext("../../static/fpp/data/*OIC.txt")$text), collapse = " ")
+combined_testimony$Public <- paste(as.character(readtext("../../static/fpp/data/*public.txt")$text), collapse = " ")
+combined_testimony$Carriers <- paste(as.character(readtext("../../static/fpp/data/*carrier.txt")$text), collapse = " ")
+combined_testimony$Providers <- paste(as.character(readtext("../../static/fpp/data/*provider.txt")$text), collapse = " ")
+
+combined_testimony <- combined_testimony %>% 
+  gather(key = "group", value = "testimony")
+```
+
+Once I had the text files in R, the `tm` package provided the tools to create the term-document matrix of all testimony, with one column for each stakeholder group. 
+
+
+```r
+docs <- Corpus(VectorSource(combined_testimony$testimony)) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(removeNumbers) %>%
+  tm_map(tolower)  %>%
+  tm_map(removeWords, stopwords("english")) %>%
+  tm_map(stripWhitespace) #%>%
+  #tm_map(PlainTextDocument)
+
+tdm <- TermDocumentMatrix(docs) %>%
+  as.matrix()
+colnames(tdm) <- c("OIC","Public","Carriers", "Providers")
+```
+
+First, I wanted to look at what words were most commonly used *accross* all groups. This issue has been before the state legislature for several years, and I expect each group is fairly familiar with each other at this point. 
+
+
+```r
+set.seed(1234)
+commonality.cloud(tdm, random.order=FALSE, scale=c(5, .5),colors = viridis(n = 4, direction = -1, end = .95), max.words=400)
+```
+
+<img src="/post/2019-03-05-legislative-sentiment-analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+
+Seems like standard phrases relating to the issue were common, with a fair share of gratitude expressed as part of the formal "Thank you Madam Chair and members of the committee..." song and dance.
+
+The words that each group used *more* than the others reveal better information about the content of their testimony. 
+
+
+```r
+par(mfrow=c(1,1))
+	comparison.cloud(tdm, random.order=FALSE,
+	                 title.size=2.5, max.words=400)
+```
+
+<img src="/post/2019-03-05-legislative-sentiment-analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+Much of the public testimony consisted of a heartbreaking anecdote about a woman and her son who incurred six figure expenses from out-of-network physician charges. The OIC used positive language to indicate optimism and support. Carriers were concerned with their members, bills, and network adequacy. Providers wanted to know the impact of the legislation on their profitability.
+
+The `nrc` package contains word associations for several emotions, as well as positive and negative sentiment. I used this package to develop the percentage of words each stakeholder group used in testimony (`anger`, `fear`, `anticipation`, `trust`, `surprise`, `sadness`, `joy`, and `disgust`).    
+
+
+
+```r
+nrc_sentiment <- get_sentiments("nrc")
+
+joined_sentiment <- tidy(tdm) %>%
+  rename(word = .rownames) %>% 
+  inner_join(nrc_sentiment) %>% 
+  gather(key = group, value = count, OIC, Providers, Carriers, Public)
+
+matched_sentiment <- joined_sentiment %>% 
+  group_by(sentiment, group) %>% 
+  summarise(usage = sum(count)) %>% 
+  ungroup()
+
+average_sentiment <- matched_sentiment %>% 
+  group_by(sentiment) %>% 
+  summarize(average_usage = mean(usage)) %>% 
+  ungroup()
+
+sum_sentiment <- matched_sentiment %>% 
+  filter(sentiment != "positive", sentiment != "negative") %>% 
+  group_by(group) %>% 
+  summarize(sum_usage = sum(usage)) %>% 
+  ungroup()
+
+
+sub_matched_sentiment <- matched_sentiment %>% 
+  filter(sentiment != "positive", sentiment != "negative") %>%
+  left_join(sum_sentiment) %>% 
+  mutate(usage_pct = usage/sum_usage,
+         sentiment = factor(sentiment, 
+                                    levels = c("disgust", "anger","fear", "sadness", 
+                                               "anticipation", "surprise", "trust", "joy"))
+         )
+head(sub_matched_sentiment)
+```
+
+```
+## # A tibble: 6 x 5
+##   sentiment    group     usage sum_usage usage_pct
+##   <fct>        <chr>     <dbl>     <dbl>     <dbl>
+## 1 anger        Carriers      3       239    0.0126
+## 2 anger        OIC           9       199    0.0452
+## 3 anger        Providers     7       299    0.0234
+## 4 anger        Public       10       349    0.0287
+## 5 anticipation Carriers     62       239    0.259 
+## 6 anticipation OIC          52       199    0.261
+```
+
+I then plotted the percent of testimony for each group in each emotion. Overall, the testimony remained fairly positive. The public testimony used the largest proportion `fear` and `sadness` related words, which is expected given the emotional and honest testimony they provided about medical and financial struggles. Interestingly, providers used the greatest proportion of trust-based words. Upon further inspection, "arbitration" is coded as a trust word. Providers were especially concerned about the arbitration provision in the bill, which could explain the frequency. 
+
+
+```r
+gg <- ggplot(sub_matched_sentiment, aes(fill=group, y=usage_pct, x=group)) + 
+  geom_col() +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_fill_viridis_d() +
+  facet_wrap(~sentiment, nrow = 2) +
+  guides(fill=FALSE) +
+  scale_y_percent(breaks = c(0, .2, .4)) 
+
+print(gg)
+```
+
+<img src="/post/2019-03-05-legislative-sentiment-analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+
+Here is the chart represented in proportional bars. I relied heavily on Kieran Healy's *[Data Visualization: A practical Introduction](https://www.amazon.com/Data-Visualization-Introduction-Kieran-Healy/dp/0691181624), which I would highly recommend. 
+
+
+
+```r
+gg2 <- ggplot(sub_matched_sentiment, aes(x = group, y = usage_pct , fill = sentiment)) +
+  geom_col(color = "darkgray") +
+  #scale_x_discrete(labels = group) +
+  scale_y_percent() +
+  scale_fill_viridis_d() +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  labs(x = NULL, y = NULL,
+       fill = "Percent of Testimony") +
+  theme(legend.position = "top",
+        axis.text.y = element_text(face = "bold", hjust = 1),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank())+
+  coord_flip()
+
+print(gg2)
+```
+
+<img src="/post/2019-03-05-legislative-sentiment-analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+
+Let me know what plot you like better in the comments! I'm interested in exploring further how text and sentiment-based analysis can be used in the context of verbal testimony to government committees. 

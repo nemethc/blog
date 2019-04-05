@@ -18,27 +18,55 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
-  title = "CEO"
-  company = "GenCoin"
+  title = "Graduate Student"
+  company = "The Evergreen State College MPA"
   company_url = ""
-  location = "California"
-  date_start = "2017-01-01"
+  location = "Olympia, WA"
+  date_start = "2018-09-01"
+  date_end = ""
+  description = """
+  Interests include:
+  
+  * Data science for public policy
+  * Empirical policy analysis
+  * Healthcare policy
+  """
+
+[[experience]]
+  title = "Associate Policy and Data Analyst"
+  company = "Washington Office of the State Actuary"
+  company_url = ""
+  location = "Washington Legislature"
+  date_start = "2017-06-01"
   date_end = ""
   description = """
   Responsibilities include:
   
-  * Analysing
-  * Modelling
-  * Deploying
+  * Analysing and modelling public policy
+  * Organizing and deploying business data
+  * Managing data-based project teams 
   """
 
 [[experience]]
-  title = "Professor"
-  company = "University X"
+  title = "Management Analyst"
+  company = "Washington State Office of Financial Management"
   company_url = ""
-  location = "California"
+  location = "Olympia, Washington"
   date_start = "2016-01-01"
-  date_end = "2016-12-31"
-  description = """Taught electronic engineering and researched semiconductor physics."""
+  date_end = "2017-05-01"
+  description = """Built data-driven enterprise-wide human resource models and analyzed impacts of statewide total compensation policy."""
+  
+[[experience]]
+  title = "BA in Business Administration— Finance | Student-Athlete"
+  company = "University of Washington Foster School of Business"
+  company_url = ""
+  location = "Seattle, Washington"
+  date_start = "2013-09-01"
+  date_end = "2017-05-01"
+  description = """
+  * Dean's list student excelling in quantitative finance, economics, and statistics.  
+  * Competitor and teammate on the Washington Husky Men's Crew team. 
+  
+  """
 
 +++

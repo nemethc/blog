@@ -27,12 +27,6 @@ subtitle = ""
   description = "currently learning"
 
 [[feature]]
-  icon = "chart-bar"
-  icon_pack = "fas"
-  name = "Data Visualization"
-  description = "user-centered | ggplot2 | PowerBI"
-
-[[feature]]
   icon = "landmark"
   icon_pack = "fas"
   name = "Policy Analysis"

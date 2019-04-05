@@ -25,7 +25,7 @@ email = ""
 interests = [
   "Data Science for Public Policy",
   "Policy Design",
-  "Government & Technology"
+  "Government, Technology, & Healthcare"
 ]
 
 # Organizational groups that you belong to (for People widget)

@@ -20,11 +20,17 @@ subtitle = ""
   name = "R"
   description = "data science | statistics | tidyverse"
 
-  [[feature]]
-    icon = "python"
-    icon_pack = "fab"
-    name = "Python"
-    description = "currently learning"
+[[feature]]
+  icon = "python"
+  icon_pack = "fab"
+  name = "Python"
+  description = "currently learning"
+
+[[feature]]
+  icon = "chart-bar"
+  icon_pack = "fas"
+  name = "Data Visualization"
+  description = "user-centered | ggplot2 | PowerBI"
 
 [[feature]]
   icon = "landmark"

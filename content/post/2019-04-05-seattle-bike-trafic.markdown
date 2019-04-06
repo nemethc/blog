@@ -4,7 +4,7 @@ subtitle: TidyTuesday data exploration
 authors: ["admin"]
 date: '2019-04-05'
 categories: ["R"]
-tags: ["#tidytuesday"]
+tags: ["tidytuesday"]
 ---
 
 

@@ -3,7 +3,7 @@
 widget = "experience"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
-weight = 40  # Order that this section will appear.
+weight = 70  # Order that this section will appear.
 
 title = "Experience"
 subtitle = ""
@@ -26,7 +26,7 @@ date_format = "Jan 2006"
   date_end = ""
   description = """
   Interests include:
-  
+
   * Data science for public policy
   * Empirical policy analysis
   * Healthcare policy
@@ -41,10 +41,10 @@ date_format = "Jan 2006"
   date_end = ""
   description = """
   Responsibilities include:
-  
+
   * Analysing and modelling public policy
   * Organizing and deploying business data
-  * Managing data-based project teams 
+  * Managing data-based project teams
   """
 
 [[experience]]
@@ -55,7 +55,7 @@ date_format = "Jan 2006"
   date_start = "2016-01-01"
   date_end = "2017-05-01"
   description = """Built data-driven enterprise-wide human resource models and analyzed impacts of statewide total compensation policy."""
-  
+
 [[experience]]
   title = "BA in Business Administration— Finance | Student-Athlete"
   company = "University of Washington Foster School of Business"
@@ -65,8 +65,8 @@ date_format = "Jan 2006"
   date_end = "2017-05-01"
   description = """
   * Dean's list student excelling in quantitative finance, economics, and statistics.  
-  * Competitor and teammate on the Washington Husky Men's Crew team. 
-  
+  * Competitor and teammate on the Washington Husky Men's Crew team.
+
   """
 
 +++

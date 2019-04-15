@@ -10,6 +10,12 @@ image:
   focal_point: ''
 ---
 
+```{r echo = FALSE}
+blogdown::shortcode('tweet', '1117217377815425024')
+```
+
+
+
 I took tennis lessons for two weeks in middle school. That was enough. Thankfully, other folks stuck it out so I could plot their data for this week's #TidyTuesday exercise. I spent more time on this dot plot than I anticipated, but I think it turned out alright. I'm looking forward to digging in to some more modeling later this quarter for my MPA program, so some time on the basics now will definitely help later on. 
 
 ```{r message = FALSE, warning = FALSE, error = FALSE}

@@ -10,6 +10,10 @@ image:
   focal_point: ''
 ---
 
+<!--html_preserve-->{{% tweet "1117217377815425024" %}}<!--/html_preserve-->
+
+
+
 I took tennis lessons for two weeks in middle school. That was enough. Thankfully, other folks stuck it out so I could plot their data for this week's #TidyTuesday exercise. I spent more time on this dot plot than I anticipated, but I think it turned out alright. I'm looking forward to digging in to some more modeling later this quarter for my MPA program, so some time on the basics now will definitely help later on. 
 
 
@@ -62,7 +66,7 @@ gg <- ggplot(cumulative_wins_age, aes(x = age, fill = grand_slam.x, color = gran
 gg
 ```
 
-<img src="/post/2019-04-13-tidy-tennis_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<img src="/post/2019-04-13-tidy-tennis_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 
 ```r
 gg2 <- ggplot(rolling_win_pct, aes(x = age, y = cum_pct)) +
@@ -79,5 +83,5 @@ gg2 <- ggplot(rolling_win_pct, aes(x = age, y = cum_pct)) +
 gg2
 ```
 
-<img src="/post/2019-04-13-tidy-tennis_files/figure-html/unnamed-chunk-2-2.png" width="672" />
+<img src="/post/2019-04-13-tidy-tennis_files/figure-html/unnamed-chunk-3-2.png" width="672" />
 

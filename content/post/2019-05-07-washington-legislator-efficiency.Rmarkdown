@@ -107,7 +107,8 @@ g3 <- ggplot(bills_eb, aes(x = pct_passed, y = eb_estimate, label = `Original Sp
   theme_modern_rc()
   
 
-ggplotly(g3)
+g1 <- ggplotly(g3)
+frameWidget(g1)
 ```
 
 

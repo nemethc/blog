@@ -22,6 +22,7 @@ library(VGAM)
 library(kableExtra)
 library(plotly)
 library(hrbrthemes)
+library(widgetframe)
 
 bill_data <- read_csv(here("static/data/session_data.csv"))
 party_data <- read_csv(here("static/data/leg_rosters.csv"))
@@ -54,7 +55,8 @@ billsgraph <- ggplot(sponsor_record, aes(x = passed, y = not_passed, color = Par
                         values=c("blue", "red"))
   
 
-ggplotly(billsgraph)
+g <- ggplotly(billsgraph)
+frameWidget(g)
 ```
 
 Intuition generally holds up here. The minority party, in this case Republicans, generally passes fewer bills, with a higher volume of bills not passing. However, ranking members from most to fewest bills passed doesn't give us the true picture of effectiveness, because the total number of bills by a given member varies accross the board. In order to get a more complete picture, we can use a Bayesian prior of the overall distribution, and *shrink* the ratio of passes to failures. 

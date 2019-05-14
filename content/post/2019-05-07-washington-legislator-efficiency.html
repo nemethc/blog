@@ -1,0 +1,110 @@
+---
+title: Analyzing State Legislator Effectiveness, Part One
+subtitle: Empirical Bayesian Shrinkage towards a Beta Prior
+author: Corban
+date: '2019-05-07'
+slug: washington-legislator-efficiency
+categories:
+  - R
+tags: []
+image:
+  caption: ''
+  focal_point: ''
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<p>Washington State’s legislative session recently concluded. The Democrats, who for the second year in a row controlled both the House and the Senate, celebrated success with the passage of signature legislation such as a raise in the smoking age, a public option for health insurance, and environmental protections. However, those big-name bills don’t tell the whole story. For this analysis, I wanted to dig in to the over 2500 bills introduced this session by members. I’m also working through David Robinson’s <em>Introduction to Empirical Bayes</em>, which is a fantastic applied reference to my trip down Bayesian Lane this academic quarter. I equated the baseball “batting average” metric used by Robinson throughout the text to a legislative batting average, being the number of bills a member prime sponsored divided by the total number of bills they sponsored. Emperical Bayesian shrinkage was appropriate in this case, as some members introduced relatively bills that had a higher likelihood of success, without giving credence to their overall numerical significance. Let’s see how it looks.</p>
+<pre class="r"><code>library(tidyverse)
+library(here)
+library(stats4)
+library(VGAM)
+library(kableExtra)
+library(plotly)
+library(hrbrthemes)
+library(widgetframe)
+
+bill_data &lt;- read_csv(here(&quot;static/data/session_data.csv&quot;))
+party_data &lt;- read_csv(here(&quot;static/data/leg_rosters.csv&quot;))
+
+
+bill_data &lt;- bill_data %&gt;%
+  separate(Bill, c(&quot;prefix&quot;, &quot;bill_number&quot;), sep = &quot; &quot;) %&gt;% #seperate e.g. HB 1065 into components
+  mutate(billpassed = if_else(Status == &quot;Del to Gov&quot; | startsWith(Status, &quot;C&quot;),&quot;passed&quot;, &quot;not_passed&quot;)) %&gt;% #filter for bills that passed 
+  distinct() %&gt;% #removes house of origin duplicates
+  left_join(party_data, by = c(&quot;Original Sponsor&quot; = &quot;Member Name&quot;)) %&gt;% #join by party affiliation
+  select(bill_number, Status, Title,`Original Sponsor`, billpassed, Party) %&gt;% 
+  filter(`Original Sponsor` != &quot;People of the State of Washington&quot;) %&gt;%  #not including initiatives, sorry Tim Eyman
+  mutate(Party = as.factor(Party))
+
+sponsor_record &lt;- bill_data %&gt;% 
+  count(`Original Sponsor`, billpassed, Party) %&gt;% 
+  spread(billpassed, n) %&gt;% 
+  mutate(passed = replace_na(passed, 0),
+         not_passed = replace_na(not_passed, 0),
+         tot_bills = passed + not_passed,
+         pct_passed = passed / (tot_bills))
+
+billsgraph &lt;- ggplot(sponsor_record, aes(x = passed, y = not_passed, color = Party, label = `Original Sponsor`))+
+  geom_jitter() +
+  labs(title = &quot;Overall Bill Passage&quot;,
+       y = &quot;Bills not passing&quot;,
+       x = &quot;Bills passing&quot;) +
+  theme_modern_rc() +
+  scale_color_manual(breaks = c(&quot;D&quot;, &quot;R&quot;),
+                        values=c(&quot;blue&quot;, &quot;red&quot;))
+  
+
+g &lt;- ggplotly(billsgraph)
+frameWidget(g)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-05-07-washington-legislator-efficiency_files/figure-html//widgets/widget_unnamed-chunk-1.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>Intuition generally holds up here. The minority party, in this case Republicans, generally passes fewer bills, with a higher volume of bills not passing. However, ranking members from most to fewest bills passed doesn’t give us the true picture of effectiveness, because the total number of bills by a given member varies accross the board. In order to get a more complete picture, we can use a Bayesian prior of the overall distribution, and <em>shrink</em> the ratio of passes to failures.</p>
+<p>Here’s a quick histogram of the distribution of proportion of bills passed.</p>
+<pre class="r"><code>#prior estimation
+hist(sponsor_record$pct_passed)</code></pre>
+<p><img src="/post/2019-05-07-washington-legislator-efficiency_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Based on our distribution, we can develop estimates of alpha and beta based on the technique outlined in <em>Empirical Bayes</em>.</p>
+<pre class="r"><code># log-likelihood function
+ll &lt;- function(alpha, beta) {
+x &lt;- sponsor_record$passed
+total &lt;- sponsor_record$tot_bills
+-sum(VGAM::dbetabinom.ab(x, total, alpha, beta, log = TRUE))
+}
+
+# maximum likelihood estimation
+m &lt;- mle(ll, start = list(alpha = 1, beta = 10), method = &quot;L-BFGS-B&quot;, lower = c(0.0001, .1))
+ab &lt;- coef(m) 
+alpha0 &lt;- ab[1]
+beta0 &lt;- ab[2]
+
+z &lt;- seq(0,1,length=21)
+beta_dist &lt;- data.frame(cbind(z, dbeta(z,alpha0,beta0)))
+colnames(beta_dist) &lt;- c(&quot;x&quot;, &quot;value&quot;)
+
+bills_eb &lt;- sponsor_record %&gt;%
+mutate(eb_estimate = (passed + alpha0) / (tot_bills + alpha0 + beta0),
+       delta = pct_passed-eb_estimate) %&gt;% 
+  arrange(eb_estimate) %&gt;% 
+  mutate(`Original Sponsor` = as.factor(`Original Sponsor`))
+
+
+g3 &lt;- ggplot(bills_eb, aes(x = pct_passed, y = eb_estimate, label = `Original Sponsor`, label2 = passed, label3 = not_passed, color = tot_bills, shape = Party)) +
+  geom_point() +
+  scale_color_viridis_c(name = &quot;Total Bills Introduced&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(title = &quot;Overall Bill Passage&quot;,
+       y = &quot;Bayesian estimate&quot;,
+       x = &quot;Observed percentage of bills passed&quot;) +
+  geom_abline(intercept = 0, slope = 1, color = &quot;lightgray&quot;, alpha = .5) +
+  theme_modern_rc()
+  
+
+g1 &lt;- ggplotly(g3)
+frameWidget(g1)</code></pre>
+<div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2019-05-07-washington-legislator-efficiency_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>

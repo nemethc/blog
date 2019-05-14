@@ -14,7 +14,7 @@ image:
 
 Washington State's legislative session recently concluded. The Democrats, who for the second year in a row controlled both the House and the Senate, celebrated success with the passage of signature legislation such as a raise in the smoking age, a public option for health insurance, and environmental protections. However, those big-name bills don't tell the whole story. For this analysis, I wanted to dig in to the over 2500 bills introduced this session by members. I'm also working through David Robinson's *Introduction to Empirical Bayes*, which is a fantastic applied reference to my trip down Bayesian Lane this academic quarter. I equated the baseball "batting average" metric used by Robinson throughout the text to a legislative batting average, being the number of bills a member prime sponsored divided by the total number of bills they sponsored. Emperical Bayesian shrinkage was appropriate in this case, as some members introduced relatively bills that had a higher likelihood of success, without giving credence to their overall numerical significance. Let's see how it looks.  
 
-```{r warning=FALSE, error=FALSE}
+```{r warning=FALSE, error=FALSE, message=FALSE}
 library(tidyverse)
 library(here)
 library(stats4)

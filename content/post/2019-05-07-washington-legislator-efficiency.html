@@ -108,3 +108,385 @@ g1 &lt;- ggplotly(g3)
 frameWidget(g1)</code></pre>
 <div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2019-05-07-washington-legislator-efficiency_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>We can see the empirical Bayes estimates for those with more bills passed are generally closer to the true observed number of bills passed. Due to the partisan composition of Washington’s legislature, democrats tended to have more bills passed and thus are less affected by the empirical Bayes shrinkage.</p>
+<p>Thanks again to David Robinson for the fantastic reference material! Below you will find a list of top and bottom five legislators based on the empirical Bayes shrinkage- it turns out that 76(!) bills introduced and not passed with two passes is enough to rank below those with zero overall passes.</p>
+<pre class="r"><code>bills_eb &lt;- bills_eb %&gt;% 
+  arrange(desc(eb_estimate))
+kable(tail(bills_eb))</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Original Sponsor
+</th>
+<th style="text-align:left;">
+Party
+</th>
+<th style="text-align:right;">
+not_passed
+</th>
+<th style="text-align:right;">
+passed
+</th>
+<th style="text-align:right;">
+tot_bills
+</th>
+<th style="text-align:right;">
+pct_passed
+</th>
+<th style="text-align:right;">
+eb_estimate
+</th>
+<th style="text-align:right;">
+delta
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Mullet
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0.0645161
+</td>
+<td style="text-align:right;">
+0.1298465
+</td>
+<td style="text-align:right;">
+-0.0653303
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Appleton
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+0.0416667
+</td>
+<td style="text-align:right;">
+0.1283226
+</td>
+<td style="text-align:right;">
+-0.0866560
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+O’Ban
+</td>
+<td style="text-align:left;">
+R
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0.0322581
+</td>
+<td style="text-align:right;">
+0.1148691
+</td>
+<td style="text-align:right;">
+-0.0826110
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Shea
+</td>
+<td style="text-align:left;">
+R
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0955963
+</td>
+<td style="text-align:right;">
+-0.0955963
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Young
+</td>
+<td style="text-align:left;">
+R
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0916551
+</td>
+<td style="text-align:right;">
+-0.0916551
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Walsh
+</td>
+<td style="text-align:left;">
+R
+</td>
+<td style="text-align:right;">
+76
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+78
+</td>
+<td style="text-align:right;">
+0.0256410
+</td>
+<td style="text-align:right;">
+0.0762038
+</td>
+<td style="text-align:right;">
+-0.0505627
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(head(bills_eb))</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Original Sponsor
+</th>
+<th style="text-align:left;">
+Party
+</th>
+<th style="text-align:right;">
+not_passed
+</th>
+<th style="text-align:right;">
+passed
+</th>
+<th style="text-align:right;">
+tot_bills
+</th>
+<th style="text-align:right;">
+pct_passed
+</th>
+<th style="text-align:right;">
+eb_estimate
+</th>
+<th style="text-align:right;">
+delta
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Pedersen
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.2833738
+</td>
+<td style="text-align:right;">
+0.2166262
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dhingra
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0.3548387
+</td>
+<td style="text-align:right;">
+0.2646430
+</td>
+<td style="text-align:right;">
+0.0901957
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fey
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+0.3750000
+</td>
+<td style="text-align:right;">
+0.2621751
+</td>
+<td style="text-align:right;">
+0.1128249
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Robinson
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0.4000000
+</td>
+<td style="text-align:right;">
+0.2495602
+</td>
+<td style="text-align:right;">
+0.1504398
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Riccelli
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0.3500000
+</td>
+<td style="text-align:right;">
+0.2451167
+</td>
+<td style="text-align:right;">
+0.1048833
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Callan
+</td>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.2437779
+</td>
+<td style="text-align:right;">
+0.2562221
+</td>
+</tr>
+</tbody>
+</table>

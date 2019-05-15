@@ -111,6 +111,8 @@ g1 <- ggplotly(g3)
 frameWidget(g1)
 ```
 
+We can see the empirical Bayes estimates for those with more bills passed are generally closer to the true observed number of bills passed. Due to the partisan composition of Washington's legislature, democrats tended to have more bills passed and thus are less affected by the empirical Bayes shrinkage. 
 
+Thanks again to David Robinson for the fantastic reference material!
 
 

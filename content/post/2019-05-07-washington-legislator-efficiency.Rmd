@@ -113,6 +113,15 @@ frameWidget(g1)
 
 We can see the empirical Bayes estimates for those with more bills passed are generally closer to the true observed number of bills passed. Due to the partisan composition of Washington's legislature, democrats tended to have more bills passed and thus are less affected by the empirical Bayes shrinkage. 
 
-Thanks again to David Robinson for the fantastic reference material!
+Thanks again to David Robinson for the fantastic reference material! Below is a list of top and bottom five legislators based on the empirical Bayes shrinkage. 
+
+```{r}
+
+bills_eb <- bills_eb %>% 
+  arrange(desc(eb_estimate))
+kable(tail(bills_eb))
+kable(head(bills_eb))
+```
+
 
 

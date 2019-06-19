@@ -73,4 +73,4 @@ interests = [
 
 +++
 
-Hey, this is my blog. The `#content` you'll find here will be about public policy, economics, and/or statistics, served with a hint of programming and sprinkled with some politics. Thanks for stopping by. 
+Fresh public policy, economics, and/or statistics `#content` served with a hint of programming and sprinkled with  politics. 

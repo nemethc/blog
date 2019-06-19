@@ -25,7 +25,7 @@ email = ""
 interests = [
   "Data Science for Public Policy",
   "Policy Design",
-  "Government, Technology, & Healthcare"
+  "Econometrics"
 ]
 
 # Organizational groups that you belong to (for People widget)
@@ -73,4 +73,4 @@ interests = [
 
 +++
 
-My name is Corban Nemeth and I'm a Policy & Data Analyst for the State of Washington and a graduate student in Public Administration at The Evergreen State College. I get excited about the intersection of data, decision-making, and policy design. On this site, you'll find blog posts on things I find interesting and assorted projects from my graduate program and career. 
+Hey, this is my blog. The `#content` you'll find here will be about public policy, economics, and/or statistics, served with a hint of programming and sprinkled with some politics. Thanks for stopping by. 

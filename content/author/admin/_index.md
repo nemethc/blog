@@ -73,4 +73,4 @@ interests = [
 
 +++
 
-Fresh public policy, economics, and/or statistics `#content` served with a hint of programming and sprinkled with  politics. 
+Public policy, economics, and/or statistics `#content`, served with a sprinkle of programming and politics. 
